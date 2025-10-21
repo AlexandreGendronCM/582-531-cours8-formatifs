@@ -1,9 +1,13 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include <M5_PbHub.h>
+#include <MicroOscSlip.h>
 
 
 
+
+
+MicroOscSlip<128> monOsc(&Serial);
 
 
 #define BROCHE_ATOM_FIL_BLANC 32
@@ -11,6 +15,7 @@
 #define BROCHE_ATOM_BTN 39
 #define BROCHE_ATOM_LUMIERE 27
 #define CANAL_0 0
+#define CANAL_1 1
 
 // CRGB keyPixel;
 CRGB keyPixel2;
@@ -32,6 +37,11 @@ void setup()
 
   // pinMode(BROCHE_ATOM_FIL_BLANC, INPUT_PULLUP);
   pinMode(BROCHE_ATOM_BTN, INPUT_PULLUP);
+
+
+
+  Serial.begin(115200);
+
 }
 
 void loop()
@@ -41,19 +51,11 @@ void loop()
   // int maLectureKey = digitalRead(BROCHE_ATOM_FIL_BLANC);
 
   int maLectureBtn = digitalRead(BROCHE_ATOM_BTN);
-  int value = myPbHub.digitalRead(CANAL_0);
+  int lumiere = myPbHub.analogRead(CANAL_0);
+  int angle = myPbHub.analogRead(CANAL_1);
 
 
-  // if (maLectureKey == 0)
-  // {
-
-  //   keyPixel = CRGB(220, 255, 0); // BLANC
-  // }
-  // else
-  // {
-
-  //   keyPixel = CRGB(0, 0, 0); // BLANC
-  // }
+  
 
 
   if (maLectureBtn == 0)
@@ -72,21 +74,17 @@ void loop()
 
   // TOUCHE DE CLAVIER
   
-  if (value == 0)
-  {
 
-    myPbHub.setPixelColor(CANAL_0, 0, 220,0, 150);
 
-  }
-  else
-  {
+monOsc.sendInt( "/lumiere" , lumiere);
+monOsc.sendInt( "/angle" , angle);
 
-    myPbHub.setPixelColor(CANAL_0, 0, 0,0, 0);
+  
 
-  }
 
 
   FastLED.show();
 
-  delay(20);
+  delay(100);
 }
+
